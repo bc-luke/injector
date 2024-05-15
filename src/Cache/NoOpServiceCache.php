@@ -4,7 +4,7 @@ namespace Bigcommerce\Injector\Cache;
 /**
  * No-Op service cache for testing/benchmarking purposes. Behaves as if there is no cache.
  */
-class NoOpServiceCache implements ServiceCacheInterface
+class NoOpServiceCache implements ServiceCacheInterface, BulkReadableServiceCacheInterface
 {
     /**
      * Retrieve the value of a key in the cache.
@@ -38,5 +38,10 @@ class NoOpServiceCache implements ServiceCacheInterface
     public function remove($key)
     {
         return;
+    }
+
+    public function getAll(): array
+    {
+        return [];
     }
 }

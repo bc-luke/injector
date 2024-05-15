@@ -4,7 +4,7 @@ namespace Bigcommerce\Injector\Cache;
 /**
  * In process, memory array service cache.
  */
-class ArrayServiceCache implements ServiceCacheInterface
+class ArrayServiceCache implements ServiceCacheInterface, BulkReadableServiceCacheInterface
 {
     /**
      * @var array<string, string>
@@ -57,5 +57,10 @@ class ArrayServiceCache implements ServiceCacheInterface
             return;
         }
         unset($this->values[$key]);
+    }
+
+    public function getAll(): array
+    {
+        return $this->values;
     }
 }
