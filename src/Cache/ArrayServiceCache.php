@@ -1,10 +1,14 @@
 <?php
 namespace Bigcommerce\Injector\Cache;
 
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
+
 /**
  * In process, memory array service cache.
  */
-class ArrayServiceCache implements ServiceCacheInterface, BulkReadableServiceCacheInterface
+class ArrayServiceCache implements ServiceCacheInterface, IteratorAggregate
 {
     /**
      * @var array<string, string>
@@ -37,7 +41,7 @@ class ArrayServiceCache implements ServiceCacheInterface, BulkReadableServiceCac
      * Save a key/value pair to the cache.
      *
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      * @return void
      */
     public function set($key, $value)
@@ -62,5 +66,10 @@ class ArrayServiceCache implements ServiceCacheInterface, BulkReadableServiceCac
     public function getAll(): array
     {
         return $this->values;
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->values);
     }
 }

@@ -47,11 +47,4 @@ class NoOpServiceCacheTest extends TestCase
         $cache->remove("test");
         $this->assertFalse($cache->get("test"));
     }
-
-    public function testGetAll()
-    {
-        $cache = new NoOpServiceCache();
-        $cache->set("test", 123);
-        $this->assertEmpty($cache->getAll());
-    }
 }

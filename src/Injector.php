@@ -1,6 +1,7 @@
 <?php
 namespace Bigcommerce\Injector;
 
+use Bigcommerce\Injector\Cache\InjectorReflectionCache;
 use Bigcommerce\Injector\Exception\InjectorInvocationException;
 use Bigcommerce\Injector\Exception\MissingRequiredParameterException;
 use Bigcommerce\Injector\Reflection\ParameterInspector;
@@ -43,6 +44,10 @@ class Injector implements InjectorInterface
      * @var ParameterInspector
      */
     private $inspector;
+    /**
+     * @var InjectorReflectionCache
+     */
+    private $reflectionCache;
 
     /**
      *
@@ -53,6 +58,7 @@ class Injector implements InjectorInterface
     {
         $this->container = $container;
         $this->inspector = $inspector;
+        $this->reflectionCache = new InjectorReflectionCache();
     }
 
     /**
@@ -85,6 +91,8 @@ class Injector implements InjectorInterface
             );
         }
         try {
+            $signature = $this->inspector->getSignatureByReflectionClass($reflectionClass, "__construct");
+            $this->reflectionCache->visitPublicMethod($reflectionClass, "__construct", $signature);
             $parameters = $this->buildParameterArray(
                 $this->inspector->getSignatureByReflectionClass($reflectionClass, "__construct"),
                 $parameters
