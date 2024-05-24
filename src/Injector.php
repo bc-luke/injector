@@ -4,8 +4,12 @@ namespace Bigcommerce\Injector;
 use Bigcommerce\Injector\Cache\InjectorReflectionCache;
 use Bigcommerce\Injector\Exception\InjectorInvocationException;
 use Bigcommerce\Injector\Exception\MissingRequiredParameterException;
+use Bigcommerce\Injector\Reflection\ClassInspector;
 use Bigcommerce\Injector\Reflection\ParameterInspector;
+use Bigcommerce\Injector\Reflection\ReflectionClassMap;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
+use ReflectionException;
 
 /**
  * The Injector provides instantiation of objects (or invocation of methods) within the BC application and
@@ -44,21 +48,17 @@ class Injector implements InjectorInterface
      * @var ParameterInspector
      */
     private $inspector;
-    /**
-     * @var InjectorReflectionCache
-     */
-    private $reflectionCache;
 
     /**
-     *
-     * @param ContainerInterface $container
-     * @param ParameterInspector $inspector
+     * @var ClassInspector
      */
-    public function __construct(ContainerInterface $container, ParameterInspector $inspector)
+    private $classInspector;
+
+    public function __construct(ContainerInterface $container, ParameterInspector $inspector, ClassInspector $classInspector)
     {
         $this->container = $container;
         $this->inspector = $inspector;
-        $this->reflectionCache = new InjectorReflectionCache();
+        $this->classInspector = $classInspector;
     }
 
     /**
@@ -74,31 +74,27 @@ class Injector implements InjectorInterface
      * @param array $parameters An optional array of additional parameters to pass to the created objects constructor.
      * @return object
      * @throws InjectorInvocationException
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function create($className, $parameters = [])
     {
-        $reflectionClass = new \ReflectionClass($className);
-        if (!$reflectionClass->hasMethod("__construct")) {
-            //This class doesn't have a constructor
-            return $reflectionClass->newInstanceWithoutConstructor();
+        if (!$this->classInspector->classHasMethod($className, '__construct')) {
+            return new $className();
         }
-        if (!$reflectionClass->getMethod('__construct')->isPublic()) {
+
+        if (!$this->classInspector->methodIsPublic($className, '__construct')) {
             throw new InjectorInvocationException(
                 "Injector failed to create $className - constructor isn't public." .
                 " Do you need to use a static factory method instead?"
             );
         }
-        try {
-            $signature = $this->inspector->getSignatureByReflectionClass($reflectionClass, "__construct");
-            $this->reflectionCache->visitPublicMethod($reflectionClass, "__construct", $signature);
-            $parameters = $this->buildParameterArray(
-                $this->inspector->getSignatureByReflectionClass($reflectionClass, "__construct"),
-                $parameters
-            );
 
-            return $reflectionClass->newInstanceArgs($parameters);
+        try {
+            $signature = $this->classInspector->getMethodSignature($className, '__construct');
+            $parameters = $this->buildParameterArray($signature, $parameters);
+
+            return new $className(...$parameters);
         } catch (MissingRequiredParameterException $e) {
             throw new InjectorInvocationException(
                 "Can't create $className " .
@@ -130,12 +126,12 @@ class Injector implements InjectorInterface
      * @param array $parameters
      * @return mixed
      * @throws InjectorInvocationException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function invoke($instance, $methodName, $parameters = [])
     {
         if (!is_object($instance)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Attempted Injector::invoke on a non-object: " . gettype($instance) . "."
             );
         }
@@ -153,7 +149,7 @@ class Injector implements InjectorInterface
                 " - missing parameter '" . $e->getParameterString() . "'" .
                 " could not be found. Either register it as a service or pass it to invoke via parameters."
             );
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw new InjectorInvocationException(
                 "Failed to invoke $className::$methodName - method doesn't exist."
             );
@@ -205,8 +201,8 @@ class Injector implements InjectorInterface
      * @return array
      * @throws InjectorInvocationException
      * @throws MissingRequiredParameterException
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     private function buildParameterArray($methodSignature, $providedParameters)
     {

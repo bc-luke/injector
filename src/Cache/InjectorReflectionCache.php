@@ -6,48 +6,47 @@ namespace Bigcommerce\Injector\Cache;
 
 class InjectorReflectionCache
 {
-    private $classMethods = [];
-
     private $methodExistence;
 
-    private $methodVisibility;
+    private $methodPublicVisibility;
 
     private $methodSignatures;
 
     public function __construct()
     {
         $this->methodExistence = [];
-        $this->methodVisibility = [];
+        $this->methodPublicVisibility = [];
         $this->methodSignatures = [];
     }
 
-
-    public function visitNonExistentMethod(string $class, string $method)
+    public function classHasMethod(string $class, string $method, callable $resolver): bool
     {
         $reference = $this->getReference($class, $method);
-        $this->methodExistence[$reference] = false;
+        if (!array_key_exists($reference, $this->methodExistence)) {
+            return $this->methodExistence[$reference] = $resolver();
+        }
+
+        return $this->methodExistence[$this->getReference($class, $method)];
     }
 
-    public function visitNonPublicMethod(string $class, string $method)
+    public function methodIsPublic(string $class, string $method, callable $resolver): bool
     {
         $reference = $this->getReference($class, $method);
-        $this->methodExistence[$reference] = true;
-        $this->methodVisibility[$reference] = 'non_public';
+        if (!array_key_exists($reference, $this->methodPublicVisibility)) {
+            $this->methodPublicVisibility[$reference] = $resolver();
+        }
+
+        return $this->methodPublicVisibility[$reference];
     }
 
-    public function visitPublicMethod(string $class, string $method, array $signature)
+    public function getMethodSignature(string $class, string $method, callable $resolver): array
     {
         $reference = $this->getReference($class, $method);
-        $this->methodExistence[$reference] = true;
-        $this->methodVisibility[$reference] = 'public';
-        $this->methodSignatures[$reference] = $signature;
-    }
+        if (!array_key_exists($reference, $this->methodSignatures)) {
+            $this->methodSignatures[$reference] = $resolver();
+        }
 
-    // do we need this?
-    public function get(string $class, string $method): ?array
-    {
-        $key = $this->getReference($class, $method);
-        return $this->classMethods[$key] ?? null;
+        return $this->methodSignatures[$reference];
     }
 
     /**
