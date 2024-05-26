@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Bigcommerce\Injector\Reflection;
 
 use ReflectionClass;
-use SplObjectStorage;
 
 class ReflectionClassMap
 {
@@ -15,19 +14,18 @@ class ReflectionClassMap
     private $maxSize;
 
     /**
-     * @var SplObjectStorage
+     * @var ReflectionClass[]
      */
-    private $map;
+    private $map = [];
 
     public function __construct(int $maxSize)
     {
         $this->maxSize = $maxSize;
-        $this->map = new SplObjectStorage();
     }
 
     public function put(ReflectionClass $reflection)
     {
-        if ($this->map->count() >= $this->maxSize) {
+        if (count($this->map) >= $this->maxSize) {
             $this->evictOneObject();
         }
         $this->map[$reflection->getName()] = $reflection;
@@ -48,9 +46,6 @@ class ReflectionClassMap
 
     private function evictOneObject()
     {
-        $this->map->rewind();
-        if ($this->map->valid()) {
-            $this->map->detach($this->map->current());
-        }
+        array_shift($this->map);
     }
 }
