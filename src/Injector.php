@@ -54,11 +54,16 @@ class Injector implements InjectorInterface
      */
     private $classInspector;
 
-    public function __construct(ContainerInterface $container, ParameterInspector $inspector, ClassInspector $classInspector)
+    public function __construct(ContainerInterface $container, ParameterInspector $inspector, ClassInspector $classInspector = null)
     {
         $this->container = $container;
         $this->inspector = $inspector;
-        $this->classInspector = $classInspector;
+        $this->classInspector = $classInspector ?? new ClassInspector(
+            new InjectorReflectionCache(),
+            new ReflectionClassMap(50),
+            $inspector
+        );
+
     }
 
     /**
