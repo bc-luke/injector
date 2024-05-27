@@ -34,6 +34,15 @@ class ClassInspector
         $this->parameterInspector = $parameterInspector;
     }
 
+    public function inspectMethod(string $class, string $method): void
+    {
+        if ($this->classHasMethod($class, $method)) {
+            if ($this->methodIsPublic($class, $method)) {
+                $this->getMethodSignature($class, $method);
+            }
+        }
+    }
+
     public function classHasMethod(string $class, string $method): bool
     {
         return $this->reflectionCache->classHasMethod($class, $method, function () use ($class, $method) {
