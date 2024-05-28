@@ -23,6 +23,7 @@ class ClassInspector
      * @var ParameterInspector
      */
     private $parameterInspector;
+    public static $reflectionClassesCreated = 0;
 
     public function __construct(
         InjectorReflectionCache $reflectionCache,
@@ -73,6 +74,7 @@ class ClassInspector
             $reflectionClass = $this->reflectionClassMap->get($class);
         } else {
             $reflectionClass = new ReflectionClass($class);
+            self::$reflectionClassesCreated++;
             $this->reflectionClassMap->put($reflectionClass);
         }
 
