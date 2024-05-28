@@ -72,7 +72,6 @@ class ClassInspector
         if ($this->reflectionClassMap->has($class)) {
             $reflectionClass = $this->reflectionClassMap->get($class);
         } else {
-            error_log("Created reflection class for $class");
             $reflectionClass = new ReflectionClass($class);
             $this->reflectionClassMap->put($reflectionClass);
         }
