@@ -19,6 +19,22 @@ class InjectorReflectionCache
         $this->methodSignatures = [];
     }
 
+    public function methodExistenceCount(): int
+    {
+        return count($this->methodExistence);
+    }
+
+    public function methodPublicVisibilityCount(): int
+    {
+        return count($this->methodPublicVisibility);
+    }
+
+    public function methodSignaturesCount(): int
+    {
+        return count($this->methodSignatures);
+    }
+
+
     public function classHasMethod(string $class, string $method, callable $resolver): bool
     {
         $reference = $this->getReference($class, $method);
