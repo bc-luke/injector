@@ -80,4 +80,19 @@ class ClassInspector
 
         return $reflectionClass;
     }
+
+    public function methodExistenceCount(): int
+    {
+        return $this->reflectionCache->methodSignaturesCount();
+    }
+
+    public function methodPublicVisibilityCount(): int
+    {
+        return $this->reflectionCache->methodPublicVisibilityCount();
+    }
+
+    public function methodSignaturesCount(): int
+    {
+        return $this->reflectionCache->methodSignaturesCount();
+    }
 }
