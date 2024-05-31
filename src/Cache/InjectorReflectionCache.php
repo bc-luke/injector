@@ -19,21 +19,35 @@ class InjectorReflectionCache
         $this->methodSignatures = [];
     }
 
-    public function methodExistenceCount(): int
+    public function countMethodExistenceEntries(): int
     {
         return count($this->methodExistence);
     }
 
-    public function methodPublicVisibilityCount(): int
+    public function countMethodPublicVisibilityEntries(): int
     {
         return count($this->methodPublicVisibility);
     }
 
-    public function methodSignaturesCount(): int
+    public function countMethodSignatureEntries(): int
     {
         return count($this->methodSignatures);
     }
 
+    public function getMethodExistence(): array
+    {
+        return $this->methodExistence;
+    }
+
+    public function getMethodPublicVisibility(): array
+    {
+        return $this->methodPublicVisibility;
+    }
+
+    public function getMethodSignatures(): array
+    {
+        return $this->methodSignatures;
+    }
 
     public function classHasMethod(string $class, string $method, callable $resolver): bool
     {
