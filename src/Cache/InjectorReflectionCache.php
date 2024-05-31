@@ -12,11 +12,16 @@ class InjectorReflectionCache
 
     private $methodSignatures;
 
-    public function __construct()
+    /**
+     * @param array $methodExistence
+     * @param array $methodPublicVisibility
+     * @param array $methodSignatures
+     */
+    public function __construct(array $methodExistence = [], array $methodPublicVisibility = [], array $methodSignatures = [])
     {
-        $this->methodExistence = [];
-        $this->methodPublicVisibility = [];
-        $this->methodSignatures = [];
+        $this->methodExistence = $methodExistence;
+        $this->methodPublicVisibility = $methodPublicVisibility;
+        $this->methodSignatures = $methodSignatures;
     }
 
     public function countMethodExistenceEntries(): int
