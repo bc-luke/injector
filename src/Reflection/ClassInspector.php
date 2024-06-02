@@ -83,16 +83,16 @@ class ClassInspector
 
     public function methodExistenceCount(): int
     {
-        return $this->reflectionCache->methodSignaturesCount();
+        return $this->reflectionCache->countMethodExistenceEntries();
     }
 
     public function methodPublicVisibilityCount(): int
     {
-        return $this->reflectionCache->methodPublicVisibilityCount();
+        return $this->reflectionCache->countMethodPublicVisibilityEntries();
     }
 
     public function methodSignaturesCount(): int
     {
-        return $this->reflectionCache->methodSignaturesCount();
+        return $this->reflectionCache->countMethodSignatureEntries();
     }
 }
