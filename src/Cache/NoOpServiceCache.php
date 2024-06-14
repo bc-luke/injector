@@ -50,4 +50,12 @@ class NoOpServiceCache implements ServiceCacheInterface
     {
         return false;
     }
+
+    public function removeAll(): void
+    {
+    }
+
+    public function putAll(array $values): void
+    {
+    }
 }

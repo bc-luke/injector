@@ -1,6 +1,7 @@
 <?php
 namespace Bigcommerce\Injector;
 
+use Bigcommerce\Injector\Cache\MultiGetCacheInterface;
 use Bigcommerce\Injector\Exception\InjectorInvocationException;
 use Bigcommerce\Injector\Exception\MissingRequiredParameterException;
 use Bigcommerce\Injector\Reflection\ClassInspector;
@@ -176,6 +177,11 @@ class Injector implements InjectorInterface
         }
 
         return false;
+    }
+
+    public function mergeCache(MultiGetCacheInterface $cache)
+    {
+        $this->classInspector->mergeCache($cache);
     }
 
     /**

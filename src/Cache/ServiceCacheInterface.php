@@ -43,4 +43,8 @@ interface ServiceCacheInterface
      * @return void
      */
     public function remove(string $key): void;
+
+    public function removeAll(): void;
+
+    public function putAll(array $values): void;
 }

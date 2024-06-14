@@ -93,4 +93,14 @@ class ArrayServiceCache implements ServiceCacheInterface, MultiGetCacheInterface
     {
         return count($this->values);
     }
+
+    public function removeAll(): void
+    {
+        $this->values = [];
+    }
+
+    public function putAll(array $values): void
+    {
+        $this->values = array_merge($this->values, $values);
+    }
 }

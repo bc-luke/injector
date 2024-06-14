@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bigcommerce\Injector\Reflection;
 
+use Bigcommerce\Injector\Cache\MultiGetCacheInterface;
 use Bigcommerce\Injector\Cache\ServiceCacheInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -109,6 +110,11 @@ class ClassInspector
     public function getStats(): ClassInspectorStats
     {
         return $this->stats;
+    }
+
+    public function mergeCache(MultiGetCacheInterface $cache): void
+    {
+        $this->serviceCache->putAll($cache->getAll());
     }
 
     /**
